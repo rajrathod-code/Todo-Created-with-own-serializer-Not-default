@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Todo app</h1>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="text" name=todo_name id="todo_name" placeholder="Tod_name">
+        <input type="text" name="todo_description" id="todo_description">
+        <input type="submit" onclick="postTodos()">
+    </form>
+    
+    
+    <div id="res">
+        <table>
+            <tr>
+                <th>Todo Name</th>
+                <th>Todo Description</th>
+                <th>Is completed</th>
+            </tr>
+            <tbody id="myTable">
+
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        getTodos()
+        function getTodos() {
+            axios.get('http://127.0.0.1:8000/api/todo')
+                .then(res => showOutput(res.data.data))
+                .catch(err => console.log(err))
+        }
+
+        function showOutput(data) {
+            var table = document.getElementById('myTable')
+            for (var i = 0; i < data.length; i++) {
+                var row = `
+                    <tr>
+                        <td>${data[i].todo_name} </td>
+                        <td>${data[i].todo_description} </td>
+                        <td>${data[i].is_completed} </td>
+                    </tr>`
+                table.innerHTML += row
+            }
+        }
+        function postTodos() {
+            todo_name = document.getElementById('todo_name').value;
+            todo_description = document.getElementById('todo_description').value;
+            
+            axios.post('http://127.0.0.1:8000/api/todo/',{
+                todo_name : todo_name,
+                todo_description : todo_description,
+                xstfCookieName : 'csrftoken',
+                xsrfHeaderName : 'X-CSRFToken'
+            }).then(res => alert("Your data is inserted suceesfult"))
+            .catch(err => console.error(err))
+        }
+
+    </script>
+</body>
+
+</html>
